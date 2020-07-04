@@ -13,11 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('pages.question-detail');
-});
 
-
+//PertanyaanController == QuestionController
+//JawabanController ==AnswerController
 
 Route::get('/pertanyaan', 'QuestionController@index');
 Route::post('/pertanyaan', 'QuestionController@store')->name('question.add');
