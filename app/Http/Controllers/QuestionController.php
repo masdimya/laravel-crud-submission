@@ -28,7 +28,7 @@ class QuestionController extends Controller
     
     public function create()
     {
-        return view('pages.question-add');
+        return view('pages.question-add',['url'=>route('question.add')]);
     }
 
     public function store(Request $request)
@@ -39,7 +39,8 @@ class QuestionController extends Controller
             'content' => $request->input('question'),
         ];
         
-        Question::create($data);
+        $question = Question::create($data);
+        return redirect()->route('question.detail',['id'=>$question->id]);
     }
 
     public function detailQuestion($id)
@@ -83,4 +84,30 @@ class QuestionController extends Controller
         
         return view('pages.question-detail',$data);
     }
+
+    public function edit($id){
+        $question = Question::find($id);
+        $data = [
+                'question' => $question,
+                'url'      => route('question.edit',['id'=>$id])
+            ];
+        
+        return view('pages.question-add',$data);
+    }
+
+    public function update($id,Request $request){
+        $question = Question::find($id);
+
+        $question->title   = $request->input('title');
+        $question->content = $request->input('question');
+        $question->save();
+
+        return redirect()->route('question.detail',['id'=>$id]);
+    }
+
+    public function destroy($id){
+        $question = DB::table('questions')->where('id',$id)->delete();
+        return redirect()->route('question.list');
+    }
+
 }
