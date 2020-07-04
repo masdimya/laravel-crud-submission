@@ -14,9 +14,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('pages.index');
+    return view('pages.question-detail');
 });
 
-Route::get('/data-tables', function () {
-    return view('pages.tabel');
-});
+
+
+Route::get('/pertanyaan', 'QuestionController@index');
+Route::post('/pertanyaan', 'QuestionController@store')->name('question.add');
+
+Route::get('/pertanyaan/create', 'QuestionController@create');
+
+
+Route::get('/pertanyaan/{id}', 'QuestionController@detailQuestion')->name('question.detail');
+
+Route::get('/jawaban/{pertanyaan_id}','AnswerController@index');
+Route::post('/jawaban/{pertanyaan_id}','AnswerController@store')->name('answer.add');
+
