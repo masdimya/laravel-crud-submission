@@ -13,17 +13,9 @@ class QuestionController extends Controller
     
     public function index()
     {
-        $data = DB::table('users')
-                    ->join('questions', 'users.id', '=', 'questions.user_id')
-                    ->select('users.id', 
-                            'users.username',
-                            'questions.title',
-                            'questions.content','questions.id',
-                            DB::raw('DATE_FORMAT(questions.created_at, "%b %e") as date_create'),
-                            DB::raw('DATE_FORMAT(questions.created_at, "%H:%i") as time_create'))
-                    ->get();
-        
-        return view('pages.question-list',['questions'=>$data]);
+        $questions = question::all();
+
+        return view('pages.question-list',compact('questions'));
     }
     
     public function create()
@@ -40,73 +32,41 @@ class QuestionController extends Controller
         ];
         
         $question = Question::create($data);
-        return redirect()->route('question.detail',['id'=>$question->id]);
+        return redirect()->route('question.detail',['question_id'=>$question->id]);
     }
 
-    public function detailQuestion($id)
+    public function detailQuestion($question_id)
     {
-        $question = DB::table('questions')
-                    ->join('users', 'questions.user_id', '=', 'users.id')
-                    ->select('users.id', 
-                            'users.username',
-                            'questions.title','questions.content',
-                            'questions.id','questions.votes','questions.likes','questions.dislikes',
-                            DB::raw('DATE_FORMAT(questions.created_at, "%b %e") as date_create'),
-                            DB::raw('DATE_FORMAT(questions.created_at, "%H:%i") as time_create'))
-                    ->where('questions.id',$id)
-                    ->first();
-
-        $question_comments = DB::table('question_comments')
-                    ->join('users', 'question_comments.user_id', '=', 'users.id')
-                    ->select('users.id', 
-                            'users.username',
-                            'question_comments.content',
-                            DB::raw('DATE_FORMAT(question_comments.created_at, "%b %e") as date_create'),
-                            DB::raw('DATE_FORMAT(question_comments.created_at, "%H:%i") as time_create'))
-                    ->where('question_comments.question_id',$id)
-                    ->get();
+        $question = Question::find($question_id);
         
-        $answers = DB::table('answers')
-                    ->join('users', 'answers.user_id', '=', 'users.id')
-                    ->select('users.id', 
-                            'users.username',
-                            'answers.content','answers.votes','answers.likes','answers.dislikes',
-                            DB::raw('DATE_FORMAT(answers.created_at, "%b %e") as date_create'),
-                            DB::raw('DATE_FORMAT(answers.created_at, "%H:%i") as time_create'))
-                    ->where('answers.question_id',$id)
-                    ->get();
-        
-        $data = [
-            'question' => $question,
-            'comments' => $question_comments,
-            'answers'  => $answers
-        ];
-        
-        return view('pages.question-detail',$data);
+        return view('pages.question-detail',compact('question'));
     }
 
-    public function edit($id){
-        $question = Question::find($id);
-        $data = [
-                'question' => $question,
-                'url'      => route('question.edit',['id'=>$id])
-            ];
+    public function edit($question_id){
+        $question = Question::find($question_id);
+        $url      = route('question.edit',['question_id'=>$question_id]);
         
-        return view('pages.question-add',$data);
+        
+        return view('pages.question-add',
+                    compact(
+                        'question',
+                        'url' 
+                    )
+                );
     }
 
-    public function update($id,Request $request){
-        $question = Question::find($id);
+    public function update($question_id,Request $request){
+        $question = Question::find($question_id);
 
         $question->title   = $request->input('title');
         $question->content = $request->input('question');
         $question->save();
 
-        return redirect()->route('question.detail',['id'=>$id]);
+        return redirect()->route('question.detail',['question_id'=>$question_id]);
     }
 
-    public function destroy($id){
-        $question = DB::table('questions')->where('id',$id)->delete();
+    public function destroy($question_id){
+        $question = DB::table('questions')->where('question_id',$question_id)->delete();
         return redirect()->route('question.list');
     }
 

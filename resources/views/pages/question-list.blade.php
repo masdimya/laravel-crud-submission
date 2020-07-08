@@ -13,22 +13,22 @@
                     <img alt="Avatar" class="table-avatar" src="{{asset('adminLTE/dist/img/avatar.png')}}">
                   </td>
                   <td width="70%">
-                    <a href="{{route('question.detail',['id'=>$question->id])}}">
+                    <a href="{{route('question.detail',['question_id'=>$question->id])}}">
                         <strong> {{$question->title}}</strong>
                       </a>
                       <br/>
                       <small>
-                          From <span class="badge badge-success">{{$question->username}}</span> &nbsp;&nbsp;&nbsp;&nbsp; {{$question->date_create}}  &nbsp;&nbsp;&nbsp;&nbsp; {{$question->time_create}}
+                          From <span class="badge badge-success">{{$question->user->username}}</span> &nbsp;&nbsp;&nbsp;&nbsp; {{date_format(date_create($question->updated_at),'F, d Y ')}} 
                       </small>
                   </td>
                   <td>
-                    <a href="{{route('question.detail',['id'=>$question->id])}}" class="btn btn-success btn-sm m-1">
+                    <a href="{{route('question.detail',['question_id'=>$question->id])}}" class="btn btn-success btn-sm m-1">
                       <i class="far fa-eye"></i>
                     </a>
-                    <a href="{{route('question.form-edit',['id'=>$question->id])}}" class="btn btn-warning btn-sm m-1">
+                    <a href="{{route('question.form-edit',['question_id'=>$question->id])}}" class="btn btn-warning btn-sm m-1">
                       <i class="fas fa-pencil-alt"></i>
                     </a>
-                    <form action="{{route('question.delete',['id'=>$question->id])}}" style="display:inline;" method="post">
+                    <form action="{{route('question.delete',['question_id'=>$question->id])}}" style="display:inline;" method="post">
                       @csrf
                       @method('DELETE')
                       <button class="btn btn-danger btn-sm m-1 "><i class="far fa-trash-alt"></i></button>
